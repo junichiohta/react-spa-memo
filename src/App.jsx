@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MemoList } from "./components/MemoList";
 import { MemoEditor } from "./components/MemoEditor";
+import { LoginButton } from "./components/LoginButton";
 import { loadMemos, saveMemos } from "./utils/storage";
 
 function App() {
@@ -47,18 +48,21 @@ function App() {
   const selectedMemo = memos.find((memo) => memo.id === selectedId);
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <MemoList
-        memos={memos}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onAdd={handleAdd}
-      />
-      <MemoEditor
-        memo={selectedMemo}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
-      />
+    <div>
+      <LoginButton />
+      <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
+        <MemoList
+          memos={memos}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          onAdd={handleAdd}
+        />
+        <MemoEditor
+          memo={selectedMemo}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
+      </div>
     </div>
   );
 }

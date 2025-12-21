@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export const MemoEditor = ({ memo, onUpdate, onDelete }) => {
+  const { user } = useAuth();
   const [content, setContent] = useState("");
 
   useEffect(() => {
@@ -32,19 +34,27 @@ export const MemoEditor = ({ memo, onUpdate, onDelete }) => {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        readOnly={!user}
         style={{
           width: "100%",
           height: "300px",
           padding: "10px",
           fontSize: "14px",
           border: "1px solid #ccc",
+          backgroundColor: user ? "white" : "#f0f0f0",
         }}
       />
       <div style={{ marginTop: "10px" }}>
-        <button onClick={handleUpdate} style={{ marginRight: "10px" }}>
+        <button
+          onClick={handleUpdate}
+          disabled={!user}
+          style={{ marginRight: "10px" }}
+        >
           更新
         </button>
-        <button onClick={handleDelete}>削除</button>
+        <button onClick={handleDelete} disabled={!user}>
+          削除
+        </button>
       </div>
     </div>
   );
