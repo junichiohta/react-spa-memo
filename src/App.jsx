@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import { MemoList } from "./components/MemoList";
+import { MemoEditor } from "./components/MemoEditor";
+import { loadMemos, saveMemos } from "./utils/storage";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [memos, setMemos] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+
+  useEffect(() => {
+    const loadedMemos = loadMemos();
+    setMemos(loadedMemos);
+    if (loadedMemos.length > 0) {
+      setSelectedId(loadedMemos[0].id);
+    }
+  }, []);
+
+  const handleAdd = () => {
+    const newMemo = {
+      id: Date.now(),
+      content: "新規メモ",
+    };
+    const updatedMemos = [newMemo, ...memos];
+    setMemos(updatedMemos);
+    saveMemos(updatedMemos);
+    setSelectedId(newMemo.id);
+  };
+
+  const handleUpdate = (id, content) => {
+    const updatedMemos = memos.map((memo) =>
+      memo.id === id ? { ...memo, content } : memo,
+    );
+    setMemos(updatedMemos);
+    saveMemos(updatedMemos);
+  };
+
+  const handleDelete = (id) => {
+    const updatedMemos = memos.filter((memo) => memo.id !== id);
+    setMemos(updatedMemos);
+    saveMemos(updatedMemos);
+    setSelectedId(updatedMemos.length > 0 ? updatedMemos[0].id : null);
+  };
+
+  const selectedMemo = memos.find((memo) => memo.id === selectedId);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ display: "flex", height: "100vh" }}>
+      <MemoList
+        memos={memos}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        onAdd={handleAdd}
+      />
+      <MemoEditor
+        memo={selectedMemo}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;
