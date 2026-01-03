@@ -1,8 +1,8 @@
 const STORAGE_KEY = "memos";
 
 export const loadMemos = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+  const memos = localStorage.getItem(STORAGE_KEY);
+  return memos ? JSON.parse(memos) : [];
 };
 
 export const saveMemos = (memos) => {

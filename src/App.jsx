@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { MemoList } from "./components/MemoList";
 import { MemoEditor } from "./components/MemoEditor";
 import { loadMemos, saveMemos } from "./utils/storage";
@@ -6,7 +6,6 @@ import { loadMemos, saveMemos } from "./utils/storage";
 function App() {
   const [memos, setMemos] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const isInitialMount = useRef(true);
 
   useEffect(() => {
     const loadedMemos = loadMemos();
@@ -16,32 +15,30 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    saveMemos(memos);
-  }, [memos]);
-
   const handleAdd = () => {
     const newMemo = {
       id: Date.now(),
       content: "新規メモ",
     };
-    setMemos([newMemo, ...memos]);
+    const updatedMemos = [newMemo, ...memos];
+    setMemos(updatedMemos);
+    saveMemos(updatedMemos);
     setSelectedId(newMemo.id);
   };
 
   const handleUpdate = (id, content) => {
-    setMemos(
-      memos.map((memo) => (memo.id === id ? { ...memo, content } : memo)),
+    const updatedMemos = memos.map((memo) =>
+      memo.id === id ? { ...memo, content } : memo,
     );
+    setMemos(updatedMemos);
+    saveMemos(updatedMemos);
   };
 
   const handleDelete = (id) => {
-    setMemos(memos.filter((memo) => memo.id !== id));
-    setSelectedId(memos.length > 1 ? memos[0].id : null);
+    const updatedMemos = memos.filter((memo) => memo.id !== id);
+    setMemos(updatedMemos);
+    saveMemos(updatedMemos);
+    setSelectedId(updatedMemos.length > 0 ? updatedMemos[0].id : null);
   };
 
   const selectedMemo = memos.find((memo) => memo.id === selectedId);

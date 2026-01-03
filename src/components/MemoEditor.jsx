@@ -3,25 +3,15 @@ import { useState, useEffect } from "react";
 export const MemoEditor = ({ memo, onUpdate, onDelete }) => {
   const [content, setContent] = useState("");
 
+  // memoが変わったらcontentをリセット
   useEffect(() => {
-    if (memo) {
-      setContent(memo.content);
-    }
-  }, [memo]);
+    setContent(memo?.content || "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [memo?.id]); // memo.idが変わったときのみ実行
 
   if (!memo) {
     return <div style={{ padding: "20px" }}>メモを選択してください</div>;
   }
-
-  const handleUpdate = () => {
-    onUpdate(memo.id, content);
-  };
-
-  const handleDelete = () => {
-    if (window.confirm("このメモを削除しますか？")) {
-      onDelete(memo.id);
-    }
-  };
 
   return (
     <div style={{ flex: 1, padding: "20px" }}>
@@ -41,10 +31,19 @@ export const MemoEditor = ({ memo, onUpdate, onDelete }) => {
         }}
       />
       <div style={{ marginTop: "10px" }}>
-        <button onClick={handleUpdate} style={{ marginRight: "10px" }}>
+        <button
+          onClick={() => onUpdate(memo.id, content)}
+          style={{ marginRight: "10px" }}
+        >
           更新
         </button>
-        <button onClick={handleDelete}>削除</button>
+        <button
+          onClick={() =>
+            window.confirm("このメモを削除しますか？") && onDelete(memo.id)
+          }
+        >
+          削除
+        </button>
       </div>
     </div>
   );
